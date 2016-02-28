@@ -1,9 +1,6 @@
-package chikuo.tw.lightspeedtalk_android;
+package chikuo.tw.lightspeedtalk_android.Activity;
 
 import android.content.Intent;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +14,10 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import chikuo.tw.lightspeedtalk_android.Application;
+import chikuo.tw.lightspeedtalk_android.MessageCallback;
+import chikuo.tw.lightspeedtalk_android.R;
 
 public class MainActivity extends AppCompatActivity {
 

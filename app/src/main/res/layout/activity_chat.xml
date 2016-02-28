@@ -4,11 +4,19 @@
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
     
-    <tw.soleil.ibento_android.view.ChatView
-        android:id="@+id/chatView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <!--<tw.soleil.ibento_android.view.ChatView-->
+        <!--android:id="@+id/chatView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+        <!-- -->
 
-    </tw.soleil.ibento_android.view.ChatView>
+    <!--</tw.soleil.ibento_android.view.ChatView>-->
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chat_history_rv"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

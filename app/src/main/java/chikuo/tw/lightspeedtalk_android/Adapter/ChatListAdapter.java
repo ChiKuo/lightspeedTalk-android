@@ -1,6 +1,7 @@
-package chikuo.tw.lightspeedtalk_android;
+package chikuo.tw.lightspeedtalk_android.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import chikuo.tw.lightspeedtalk_android.Activity.ChatActivity;
+import chikuo.tw.lightspeedtalk_android.R;
 
 /**
  * Created by chiuo on 2015/12/8.
@@ -33,7 +37,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_chat_list_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_chat_list_item, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -42,7 +46,8 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         HashMap<String, String> eachChat = partiesList.get(position);
 
-        holder.textName.setText(eachChat.get("clientId"));
+//        holder.textName.setText(eachChat.get("clientId")); //Token
+        holder.textName.setText(eachChat.get("username"));
 
 //        holder.textMsg.setText(eachChat.message);
 //        holder.imgIcon.setImageResource(R.drawable.friend_group);
@@ -139,12 +144,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 //            badge.setTextColor(ct.getResources().getColor(R.color.no5));
 //            badge.setBadgeColor(ct.getResources().getColor(R.color.no1));
 //
-//            itemView.setOnClickListener(this);
+            itemView.setOnClickListener(this);
 //            itemView.setOnLongClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+
+            Intent chatIntent = new Intent(ct,ChatActivity.class);
+            ct.startActivity(chatIntent);
 
 //            // Show the chat detail
 //            Chat chat = filteredChatList.get(getAdapterPosition());

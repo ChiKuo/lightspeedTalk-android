@@ -1,11 +1,10 @@
-package chikuo.tw.lightspeedtalk_android;
+package chikuo.tw.lightspeedtalk_android.Activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.arrownock.exception.ArrownockException;
@@ -20,6 +19,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import chikuo.tw.lightspeedtalk_android.Application;
+import chikuo.tw.lightspeedtalk_android.Adapter.ChatListAdapter;
+import chikuo.tw.lightspeedtalk_android.R;
 
 /**
  * Created by edward_chiang on 15/5/19.

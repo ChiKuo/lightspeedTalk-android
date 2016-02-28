@@ -21,7 +21,7 @@
         <meta-data
             android:name="com.arrownock.APP_KEY" android:value="@string/app_key" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +30,8 @@
         </activity>
 
 
-        <activity android:name=".ChatListActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".Activity.ChatListActivity" />
+        <activity android:name=".Activity.ChatActivity" />
 
 
     </application>
