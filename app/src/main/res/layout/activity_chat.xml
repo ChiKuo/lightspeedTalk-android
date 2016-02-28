@@ -3,20 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
-    
-    <!--<tw.soleil.ibento_android.view.ChatView-->
-        <!--android:id="@+id/chatView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-        <!-- -->
-
-    <!--</tw.soleil.ibento_android.view.ChatView>-->
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/chat_history_rv"
         android:scrollbars="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:background="#DDDDDD"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="傳送"
+            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/send_button"
+            android:layout_alignBottom="@+id/message_input_edit_text"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:id="@+id/message_input_edit_text"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/send_button"
+            android:layout_toStartOf="@+id/send_button" />
+    </RelativeLayout>
 
 </RelativeLayout>

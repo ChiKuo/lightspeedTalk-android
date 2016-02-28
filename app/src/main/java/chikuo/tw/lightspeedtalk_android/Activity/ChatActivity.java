@@ -1,5 +1,6 @@
 package chikuo.tw.lightspeedtalk_android.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -8,7 +9,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 //
 //import com.parse.GetCallback;
@@ -22,6 +27,13 @@ import android.widget.Toast;
 import com.arrownock.exception.ArrownockException;
 import com.arrownock.im.AnIMMessage;
 import com.arrownock.im.AnIMMessageType;
+import com.arrownock.im.callback.AnIMBinaryCallbackData;
+import com.arrownock.im.callback.AnIMCallbackAdapter;
+import com.arrownock.im.callback.AnIMMessageCallbackData;
+import com.arrownock.im.callback.AnIMMessageSentCallbackData;
+import com.arrownock.im.callback.AnIMStatusUpdateCallbackData;
+import com.arrownock.im.callback.AnIMTopicBinaryCallbackData;
+import com.arrownock.im.callback.AnIMTopicMessageCallbackData;
 import com.arrownock.im.callback.IAnIMHistoryCallback;
 
 import java.util.ArrayList;
@@ -61,6 +73,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 	private ArrayList<MyMessage> history;
 
 	private String targetId = "AIMOM1Y3KT3T8DV8YMUN5U5";
+	private MyMessage messageToSend;
+	private EditText messageEditText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +82,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		setContentView(R.layout.activity_chat);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-		application = Application.getInstance(this);
+		application = (Application) getApplicationContext();
 
 		initView();
 		getHistory();
@@ -85,6 +99,209 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		}
 	}
 
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		application.anIM.setCallback(null);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		application.anIM.setCallback(messagecallback);
+	}
+
+	AnIMCallbackAdapter messagecallback = new AnIMCallbackAdapter() {
+		@Override
+		public void receivedTopicMessage(AnIMTopicMessageCallbackData callbackData) {
+			final String from = callbackData.getFrom();
+			final String fromTopic = callbackData.getTopic();
+			final String message = callbackData.getMessage();
+			final Map<String, String> customData = callbackData.getCustomData();
+			final String type = customData == null ?
+					Utils.Constant.AttachmentType.TEXT:customData.get(Utils.Constant.MsgCustomData.TYPE);
+			final String data = customData == null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATA);
+
+			if (roomType == Utils.Constant.RoomType.TOPIC && targetId.equals(fromTopic)) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						MyMessage mMessage = new MyMessage(
+								from,
+								type,
+								message,
+								data,
+								null
+						);
+						history.add(mMessage);
+						updateHistoryList(true);
+					}
+				});
+			} else {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						if (type.equals(Utils.Constant.AttachmentType.TEXT)){
+							Toast.makeText(getBaseContext(),"["+application.mTopicsMap.get(fromTopic)+"] "+application.mUsersMap.get(from)+" : " + message, Toast.LENGTH_LONG).show();
+						}else{
+							Toast.makeText(getBaseContext(),"["+application.mTopicsMap.get(fromTopic)+"] "+application.mUsersMap.get(from)+" : [" + customData.get("type") + "]", Toast.LENGTH_LONG).show();
+						}
+					}
+				});
+			}
+
+		}
+
+		@Override
+		public void receivedMessage(AnIMMessageCallbackData callbackData) {
+			final String from = callbackData.getFrom();
+			final String message = callbackData.getMessage();
+			final Map<String, String> customData = callbackData.getCustomData();
+			final String type = customData==null ?
+					Utils.Constant.AttachmentType.TEXT:customData.get(Utils.Constant.MsgCustomData.TYPE);
+			final String data = customData==null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATA);
+
+			if (roomType == Utils.Constant.RoomType.CLIENT && from.equals(targetId)) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						MyMessage mMessage = new MyMessage(
+								from,
+								type,
+								message,
+								data,
+								null
+						);
+						history.add(mMessage);
+						updateHistoryList(true);
+					}
+				});
+			} else {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						if (type.equals(Utils.Constant.AttachmentType.TEXT)){
+							Toast.makeText(getBaseContext(),application.mUsersMap.get(from)+" : " + message, Toast.LENGTH_LONG).show();
+						}else{
+							Toast.makeText(getBaseContext(),application.mUsersMap.get(from)+" : [" + customData.get("type") + "]", Toast.LENGTH_LONG).show();
+						}
+					}
+				});
+			}
+		}
+
+		@Override
+		public void receivedBinary(final AnIMBinaryCallbackData callbackData){
+			if (roomType == Utils.Constant.RoomType.CLIENT && callbackData.getFrom().equals(targetId)) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						MyMessage mMessage = new MyMessage(
+								callbackData.getFrom(),
+								callbackData.getFileType(),
+								null,
+								null,
+								callbackData.getContent()
+						);
+						history.add(mMessage);
+						updateHistoryList(true);
+					}
+				});
+			}else{
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(getBaseContext(),application.mUsersMap.get(callbackData.getFrom())+" : ["+callbackData.getFileType()+"]", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		}
+
+		@Override
+		public void receivedTopicBinary(final AnIMTopicBinaryCallbackData callbackData){
+			if (roomType == Utils.Constant.RoomType.TOPIC && callbackData.getTopic().equals(targetId)) {
+				runOnUiThread(new Runnable() {
+					public void run() {
+						MyMessage mMessage = new MyMessage(
+								callbackData.getFrom(),
+								callbackData.getFileType(),
+								null,
+								null,
+								callbackData.getContent()
+						);
+						history.add(mMessage);
+						updateHistoryList(true);
+					}
+				});
+			}else{
+				runOnUiThread(new Runnable() {
+					public void run() {
+						Toast.makeText(getBaseContext(),"["+application.mTopicsMap.get(callbackData.getTopic())+"] "+application.mUsersMap.get(callbackData.getFrom())+" : ["+callbackData.getFileType()+"]", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
+		}
+
+		@Override
+		public void messageSent(final AnIMMessageSentCallbackData data){
+			if(data.isError()){
+				runOnUiThread(new Runnable(){
+					public void run() {
+						Toast.makeText(getBaseContext(), data.getException().getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
+			}else{
+				runOnUiThread(new Runnable() {
+					public void run() {
+						MyMessage mMessage = new MyMessage(
+								application.mClientId,
+								messageToSend.getType(),
+								messageToSend.getMsg(),
+								messageToSend.getData(),
+								messageToSend.getContent()
+						);
+						history.add(mMessage);
+
+						InputMethodManager imm = (InputMethodManager) ChatActivity.this
+								.getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(messageEditText.getWindowToken(), 0);
+						messageEditText.setText("");
+						messageToSend = new MyMessage();
+
+						updateHistoryList(true);
+					}
+				});
+			}
+		}
+		@Override
+		public void statusUpdate(final AnIMStatusUpdateCallbackData data){
+			final ArrownockException e = data.getException();
+			if(e == null){
+				runOnUiThread(new Runnable(){
+					public void run() {
+						Toast.makeText(getBaseContext(), data.getStatus().name(), Toast.LENGTH_LONG).show();
+					}
+				});
+			}else{
+				runOnUiThread(new Runnable(){
+					public void run() {
+						Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+					}
+				});
+				if (data.getException().getErrorCode() == ArrownockException.IM_FORCE_CLOSED
+						|| data.getException().getErrorCode() == ArrownockException.IM_FAILED_DISCONNECT) {
+					try {
+						application.anIM.disconnect();
+					} catch (ArrownockException e1) {
+						e1.printStackTrace();
+					}
+					Intent it = new Intent();
+					it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					it.setClass(getBaseContext(), MainActivity.class);
+					startActivity(it);
+					finish();
+				}
+			}
+		}
+	};
+
 	private void initView() {
 		RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
 		chatHistoryRv = (RecyclerView) findViewById(R.id.chat_history_rv);
@@ -92,6 +309,24 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		history = new ArrayList<MyMessage>();
 		chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, history,application.mClientId,application.mUsersMap);
 		chatHistoryRv.setAdapter(chatHistoryAdapter);
+
+		// Send message button
+		Button sendButton = (Button) findViewById(R.id.send_button);
+		sendButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				messageEditText = (EditText) findViewById(R.id.message_input_edit_text);
+				messageToSend = new MyMessage(
+						application.mClientId,
+						Utils.Constant.AttachmentType.TEXT,
+						messageEditText.getText().toString().trim(),
+						null,
+						null
+				);
+				sendMsg(messageToSend);
+			}
+		});
 	}
 
 	@Override
@@ -280,6 +515,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		if(scroll)
 			chatHistoryRv.smoothScrollToPosition(chatHistoryRv.getBottom());
 	}
+
 
 
 	@Override
