@@ -35,6 +35,7 @@ public class ChatListActivity extends AppCompatActivity {
 
     private Application application;
     private ArrayList<HashMap<String, String>> partiesList;
+    private List<ChatList> chatLists;
 
     private ChatListAdapter chatListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -48,6 +49,7 @@ public class ChatListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         application = (Application) getApplicationContext();
+        chatLists = new ArrayList<>();
         partiesList = new ArrayList<HashMap<String, String>>();
 
         setContentView(R.layout.activity_chat_list);
@@ -67,8 +69,11 @@ public class ChatListActivity extends AppCompatActivity {
         chatList.lastMessage = "Hi";
         chatList.update();
 
-        // Query
-        List<ChatList> chatLists = ChatList.getAll(clientId);
+        // Query the ChatList from local database
+        chatLists = ChatList.getAll(clientId);
+        chatListAdapter.setChatLists(chatLists);
+        chatListAdapter.notifyDataSetChanged();
+
 
         // Delete
 //        chatLists.get(0).delete();
@@ -77,14 +82,14 @@ public class ChatListActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
-        setProgressBarIndeterminateVisibility(true);
-        Thread t = new Thread(new Runnable(){
-            @Override
-            public void run() {
-                getAllUsersList();
-            }
-        });
-        t.start();
+//        setProgressBarIndeterminateVisibility(true);
+//        Thread t = new Thread(new Runnable(){
+//            @Override
+//            public void run() {
+//                getAllUsersList();
+//            }
+//        });
+//        t.start();
     }
 
 
@@ -111,7 +116,8 @@ public class ChatListActivity extends AppCompatActivity {
 
         // Init RecyclerView and Adapter
         chatListAdapter = new ChatListAdapter(ChatListActivity.this);
-        chatListAdapter.setPartiesList(partiesList);
+//        chatListAdapter.setPartiesList(partiesList);
+        chatListAdapter.setChatLists(chatLists);
         chatListAdapter.setOnDataResetListener(new ChatListAdapter.OnDataResetListener() {
             @Override
             public void dataDidApply(int dataCount) {

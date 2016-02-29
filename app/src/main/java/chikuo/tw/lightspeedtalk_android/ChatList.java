@@ -7,6 +7,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,7 +24,7 @@ public class ChatList extends Model {
     public String currentClientId;
     
     @Column(name = "updateTime")
-    public long updateTime;
+    public Date updateTime;
 
     @Column(name = "targetClientId")
     public String targetClientId;
@@ -37,15 +38,7 @@ public class ChatList extends Model {
     public ChatList(){
         super();
     }
-    
-//    public List<Message> messages(){
-//        return new Select().from(Message.class).where("Chat = \""+getId()+"\" and currentClientId = \""+currentClientId+"\"").execute();
-//    }
-//
-//    public Message lastMessage(){
-//    	return new Select().from(Message.class).where("Chat = \""+getId()+"\" and currentClientId = \""+currentClientId+"\"").orderBy("timestamp DESC").executeSingle();
-//    }
-//
+
 //    public List<Message> unReadedMessages(){
 //        return new Select().from(Message.class).where("Chat = \""+getId()+"\" and readed = 0 and currentClientId = \""+currentClientId+"\"").execute();
 //    }
@@ -69,22 +62,17 @@ public class ChatList extends Model {
 
 
     public void update(){
-    	Calendar c = Calendar.getInstance();
-    	updateTime = c.getTimeInMillis();
+        Date date = new Date();
 
         ChatList exist;
-//    	if(topic!=null){
-//    		exist = new Select().from(Chat.class).where("Topic = \""+topic.getId()+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
-//    	}else{
-//    		exist = new Select().from(Chat.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
-//    	}
+
         exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
 
         if(exist == null){
     		save();
     	}else{
             exist.lastMessage = lastMessage;
-    		exist.updateTime = updateTime;
+    		exist.updateTime = date;
     		exist.save();
     	}
     }

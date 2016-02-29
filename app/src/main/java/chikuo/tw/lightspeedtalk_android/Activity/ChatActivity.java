@@ -15,15 +15,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-//
-//import com.parse.GetCallback;
-//import com.parse.ParseException;
-//import com.parse.ParseFile;
-//import com.parse.ParseQuery;
-//import com.parse.ParseUser;
-//
-//import java.util.HashMap;
-//import java.util.Map;
 import com.arrownock.exception.ArrownockException;
 import com.arrownock.im.AnIMMessage;
 import com.arrownock.im.AnIMMessageType;
@@ -51,18 +42,7 @@ import chikuo.tw.lightspeedtalk_android.MyMessage;
 import chikuo.tw.lightspeedtalk_android.R;
 import chikuo.tw.lightspeedtalk_android.Utils;
 
-//import tw.soleil.ibento_android.util.BentoLightSpeedUserManager;
-//import tw.soleil.ibento_android.view.ChatView;
-//import tw.soleil.lightspeedim.Constant;
-//import tw.soleil.lightspeedim.IMManager;
-//import tw.soleil.lightspeedim.model.Chat;
-//import tw.soleil.lightspeedim.model.ChatUser;
-//import tw.soleil.lightspeedim.model.TopicMember;
-//import tw.soleil.lightspeedim.model.User;
-
 public class ChatActivity extends AppCompatActivity implements Observer{
-//	private ChatView mChatView;
-//	private Chat mChat;
 
 	private Application application;
 	private ActionBar actionBar;
