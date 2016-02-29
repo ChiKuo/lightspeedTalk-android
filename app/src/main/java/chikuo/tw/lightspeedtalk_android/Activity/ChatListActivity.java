@@ -8,8 +8,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.arrownock.exception.ArrownockException;
+import com.arrownock.im.AnIMMessage;
 import com.arrownock.im.callback.AnIMGetClientsStatusCallbackData;
 import com.arrownock.im.callback.IAnIMGetClientsStatusCallback;
+import com.arrownock.im.callback.IAnIMHistoryCallback;
 import com.arrownock.social.AnSocialMethod;
 import com.arrownock.social.IAnSocialCallback;
 
@@ -18,10 +20,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import chikuo.tw.lightspeedtalk_android.Application;
 import chikuo.tw.lightspeedtalk_android.Adapter.ChatListAdapter;
+import chikuo.tw.lightspeedtalk_android.ChatList;
 import chikuo.tw.lightspeedtalk_android.R;
 
 /**
@@ -35,6 +39,9 @@ public class ChatListActivity extends AppCompatActivity {
     private ChatListAdapter chatListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView rv;
+
+    // TODO send
+    String clientId = "AIMJYM8T2UCS5JFCD62UR8E";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +59,19 @@ public class ChatListActivity extends AppCompatActivity {
 
         initView();
 
+        // TODO test
+        // Create a ChatList
+        ChatList chatList = new ChatList();
+        chatList.currentClientId = clientId;
+        chatList.targetClientId = "AIMOM1Y3KT3T8DV8YMUN5U5";
+        chatList.lastMessage = "Hi";
+        chatList.update();
+
+        // Query
+        List<ChatList> chatLists = ChatList.getAll(clientId);
+
+        // Delete
+//        chatLists.get(0).delete();
     }
 
     @Override
@@ -108,6 +128,7 @@ public class ChatListActivity extends AppCompatActivity {
     private void getAllUsersList() {
         final Map<String, Object> params = new HashMap<String, Object>();
         params.put("limit", 100);
+//        params.put("username", "chi");
         params.put("sort", "-created_at");
         try {
             application.anSocial.sendRequest("users/query.json", AnSocialMethod.GET,

@@ -49,8 +49,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 //        holder.textName.setText(eachChat.get("clientId")); //Token
         holder.textName.setText(eachChat.get("username"));
 
-//        holder.textMsg.setText(eachChat.message);
-//        holder.imgIcon.setImageResource(R.drawable.friend_group);
 
 
 

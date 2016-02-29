@@ -21,6 +21,17 @@
         <meta-data
             android:name="com.arrownock.APP_KEY" android:value="@string/app_key" />
 
+
+        <!-- ActiveAndroid version and database name -->
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="LightSpeedTalk-android.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
+
+
+
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

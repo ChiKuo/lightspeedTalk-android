@@ -2,6 +2,7 @@ package chikuo.tw.lightspeedtalk_android;
 
 import android.content.Context;
 
+import com.activeandroid.ActiveAndroid;
 import com.arrownock.exception.ArrownockException;
 import com.arrownock.im.AnIM;
 import com.arrownock.social.AnSocial;
@@ -31,6 +32,18 @@ public class Application extends android.app.Application {
         Application application = (Application) ct.getApplicationContext();
         application.init();
         return application;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ActiveAndroid.initialize(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        ActiveAndroid.dispose();
     }
 
     public void init() {
