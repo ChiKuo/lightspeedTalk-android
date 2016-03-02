@@ -67,6 +67,7 @@ public class ChatListActivity extends AppCompatActivity {
         chatList.currentClientId = clientId;
         chatList.targetClientId = "AIMOM1Y3KT3T8DV8YMUN5U5";
         chatList.lastMessage = "Hi";
+        chatList.unReadCount = 3;
         chatList.update();
 
         // Query the ChatList from local database

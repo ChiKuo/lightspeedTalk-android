@@ -32,6 +32,9 @@ public class ChatList extends Model {
     @Column(name = "lastMessage")
     public String lastMessage;
 
+    @Column(name = "unReadCount")
+    public int unReadCount;
+
 //    @Column(name = "Topic", onDelete = Column.ForeignKeyAction.CASCADE)
 //    public Topic topic;
     
@@ -69,11 +72,15 @@ public class ChatList extends Model {
         exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
 
         if(exist == null){
+            this.updateTime = date;
     		save();
     	}else{
             exist.lastMessage = lastMessage;
+            exist.unReadCount = unReadCount;
     		exist.updateTime = date;
     		exist.save();
     	}
     }
+
+
 }

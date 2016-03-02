@@ -45,15 +45,15 @@
                     android:layout_alignParentRight="false"
                     android:layout_gravity="center_vertical"
                     android:hint="Name"
-                    android:textSize="16dp" />
+                    android:textAppearance="?android:textAppearanceMedium"/>
 
                 <TextView
                     android:id="@+id/chat_list_item_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_gravity="center_vertical"
-                    android:textSize="12dp" />
+                    android:hint="Time"
+                    android:layout_gravity="center_vertical" />
             </RelativeLayout>
 
 
@@ -70,14 +70,15 @@
                     android:layout_alignParentLeft="true"
                     android:layout_gravity="center_vertical"
                     android:maxLines="2"
-                    android:textSize="14dp" />
+                    android:text="Message"
+                    android:textAppearance="?android:textAppearanceMedium"/>
 
-                <!--<tw.soleil.ibento_android.view.BadgeView-->
-                <!--android:id="@+id/chat_list_item_badge"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_gravity="center_vertical"-->
-                <!--android:layout_alignParentRight="true" />-->
+                <TextView
+                    android:id="@+id/chat_list_item_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_alignParentRight="true"/>
 
             </RelativeLayout>
         </LinearLayout>

@@ -51,10 +51,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         holder.textTime.setText(sdf.format(chatList.updateTime));
 
-//            // Show unread message count
-//            holder.badge.setBadgeCount(chat.unReadedMessages().size());
-//
-//        }
+        if (chatList.unReadCount > 0){
+            holder.badge.setVisibility(View.VISIBLE);
+            holder.badge.setText(String.valueOf(chatList.unReadCount));
+        } else {
+            holder.badge.setVisibility(View.GONE);
+        }
 
     }
 
@@ -68,22 +70,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         private TextView textName, textMsg, textTime;
         private ImageView imgIcon;
-//        private BadgeView badge;
+        private TextView badge;
 
         public ViewHolder(View itemView) {
             super(itemView);
-//
+
             textName = (TextView) itemView.findViewById(R.id.chat_list_item_name);
             textMsg = (TextView) itemView.findViewById(R.id.chat_list_item_msg);
             textTime = (TextView) itemView.findViewById(R.id.chat_list_item_timestamp);
             imgIcon = (ImageView) itemView.findViewById(R.id.chat_list_item_icon);
-//            badge = (BadgeView) itemView.findViewById(R.id.chat_list_item_badge);
-//            badge.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-//            badge.setTextColor(ct.getResources().getColor(R.color.no5));
-//            badge.setBadgeColor(ct.getResources().getColor(R.color.no1));
-//
+            badge = (TextView) itemView.findViewById(R.id.chat_list_item_badge);
             itemView.setOnClickListener(this);
-//            itemView.setOnLongClickListener(this);
         }
 
         @Override
