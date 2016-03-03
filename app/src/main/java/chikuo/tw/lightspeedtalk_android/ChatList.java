@@ -6,13 +6,13 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
+import de.greenrobot.event.EventBus;
 
 
 /**
@@ -81,13 +81,14 @@ public class ChatList extends Model {
             if (lastMessage != null){
                 exist.lastMessage = lastMessage;
             }
-            exist.unReadCount ++;
+            exist.unReadCount = exist.unReadCount + 1;
             exist.updateTime = date;
             exist.save();
         }
 
+        // TODO reload bug
         // Reload ChatList
-//        EventBus.getDefault().post(new ChatListReloadEvent());
+        EventBus.getDefault().post(new ChatListReloadEvent());
     }
 
 
@@ -104,7 +105,7 @@ public class ChatList extends Model {
         }
 
         // Reload ChatList
-//        EventBus.getDefault().post(new ChatListReloadEvent());
+        EventBus.getDefault().post(new ChatListReloadEvent());
     }
 
 

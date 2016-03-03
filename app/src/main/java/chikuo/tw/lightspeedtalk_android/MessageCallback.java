@@ -10,13 +10,13 @@ import com.arrownock.im.callback.AnIMCallbackAdapter;
 import com.arrownock.im.callback.AnIMMessageCallbackData;
 import com.arrownock.im.callback.AnIMReceiveACKCallbackData;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
+import de.greenrobot.event.EventBus;
 
 public class MessageCallback extends AnIMCallbackAdapter {
 
@@ -47,9 +47,6 @@ public class MessageCallback extends AnIMCallbackAdapter {
         chatList.targetClientId = from ;
         chatList.lastMessage = message;
         chatList.update();
-
-        // Reload
-//        EventBus.getDefault().post(new ChatListReloadEvent());
 
         if (customData != null) {
             Set<String> keys = customData.keySet();

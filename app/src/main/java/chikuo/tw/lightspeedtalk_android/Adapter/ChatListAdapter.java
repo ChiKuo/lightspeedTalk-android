@@ -26,8 +26,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     private Context ct;
 //    private Handler handler;
 
-    public ChatListAdapter(Context ct) {
+    public ChatListAdapter(Context ct,List<ChatList> chatLists) {
         this.ct = ct;
+        this.chatLists = chatLists;
 //        handler = new Handler();
     }
 
@@ -90,11 +91,15 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         @Override
         public void onClick(View v) {
 
-            ChatList clickChat = chatLists.get(getAdapterPosition());
-            clickChat.read();
+            try {
+                ChatList clickChat = chatLists.get(getAdapterPosition());
+                clickChat.read();
 
-            Intent chatIntent = new Intent(ct,ChatActivity.class);
-            ct.startActivity(chatIntent);
+                Intent chatIntent = new Intent(ct,ChatActivity.class);
+                ct.startActivity(chatIntent);
+            } catch (ArrayIndexOutOfBoundsException e){
+                e.printStackTrace();
+            }
 
         }
     }
@@ -103,8 +108,6 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
     public void setChatLists(List<ChatList> chatLists) {
         this.chatLists = chatLists;
     }
-
-
 
     // TODO Check use
     private OnDataResetListener onDataResetListener;

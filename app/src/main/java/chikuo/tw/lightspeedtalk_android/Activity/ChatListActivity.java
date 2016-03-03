@@ -13,7 +13,7 @@ import com.arrownock.im.callback.IAnIMGetClientsStatusCallback;
 import com.arrownock.social.AnSocialMethod;
 import com.arrownock.social.IAnSocialCallback;
 
-import org.greenrobot.eventbus.EventBus;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,6 +29,7 @@ import chikuo.tw.lightspeedtalk_android.MessageCallback;
 import chikuo.tw.lightspeedtalk_android.R;
 import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
 import chikuo.tw.lightspeedtalk_android.util.EventBusObject;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by edward_chiang on 15/5/19.
@@ -79,12 +80,12 @@ public class ChatListActivity extends AppCompatActivity {
         // Query the ChatList from local database
         queryChatListFromLocalDB();
 
-//        EventBus.getDefault().register(new EventBusObject<ChatListReloadEvent>() {
-//            @Override
-//            public void onEvent(ChatListReloadEvent event) {
-//                queryChatListFromLocalDB();
-//            }
-//        });
+        EventBus.getDefault().register(new EventBusObject<ChatListReloadEvent>() {
+            @Override
+            public void onEvent(ChatListReloadEvent event) {
+                queryChatListFromLocalDB();
+            }
+        });
 
         // Delete
 //        chatLists.get(0).delete();
@@ -146,7 +147,8 @@ public class ChatListActivity extends AppCompatActivity {
     private void initView(){
 
         // Init RecyclerView and Adapter
-        chatListAdapter = new ChatListAdapter(ChatListActivity.this);
+        chatLists = new ArrayList<>();
+        chatListAdapter = new ChatListAdapter(ChatListActivity.this,chatLists);
 //        chatListAdapter.setPartiesList(partiesList);
         chatListAdapter.setChatLists(chatLists);
         chatListAdapter.setOnDataResetListener(new ChatListAdapter.OnDataResetListener() {
