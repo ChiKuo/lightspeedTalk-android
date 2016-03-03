@@ -1,7 +1,6 @@
-package chikuo.tw.lightspeedtalk_android.Adapter;
+package chikuo.tw.lightspeedtalk_android.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-import chikuo.tw.lightspeedtalk_android.Activity.ChatActivity;
 import chikuo.tw.lightspeedtalk_android.MyMessage;
 import chikuo.tw.lightspeedtalk_android.R;
 

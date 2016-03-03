@@ -1,4 +1,4 @@
-package chikuo.tw.lightspeedtalk_android.Activity;
+package chikuo.tw.lightspeedtalk_android.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,13 +8,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.arrownock.exception.ArrownockException;
-import com.arrownock.im.AnIMMessage;
 import com.arrownock.im.callback.AnIMGetClientsStatusCallbackData;
 import com.arrownock.im.callback.IAnIMGetClientsStatusCallback;
-import com.arrownock.im.callback.IAnIMHistoryCallback;
 import com.arrownock.social.AnSocialMethod;
 import com.arrownock.social.IAnSocialCallback;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -24,9 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import chikuo.tw.lightspeedtalk_android.Application;
-import chikuo.tw.lightspeedtalk_android.Adapter.ChatListAdapter;
+import chikuo.tw.lightspeedtalk_android.adapter.ChatListAdapter;
 import chikuo.tw.lightspeedtalk_android.ChatList;
+import chikuo.tw.lightspeedtalk_android.MessageCallback;
 import chikuo.tw.lightspeedtalk_android.R;
+import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
+import chikuo.tw.lightspeedtalk_android.util.EventBusObject;
 
 /**
  * Created by edward_chiang on 15/5/19.
@@ -53,7 +55,9 @@ public class ChatListActivity extends AppCompatActivity {
         partiesList = new ArrayList<HashMap<String, String>>();
 
         setContentView(R.layout.activity_chat_list);
+
     }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -63,26 +67,46 @@ public class ChatListActivity extends AppCompatActivity {
 
         // TODO test
         // Create a ChatList
-        ChatList chatList = new ChatList();
-        chatList.currentClientId = clientId;
-        chatList.targetClientId = "AIMOM1Y3KT3T8DV8YMUN5U5";
-        chatList.lastMessage = "Hi";
-        chatList.unReadCount = 3;
-        chatList.update();
+//        ChatList chatList = new ChatList();
+//        chatList.currentClientId = clientId;
+//        chatList.targetClientId = "AIMOM1Y3KT3T8DV8YMUN5U5";
+//        chatList.lastMessage = "Hi";
+//        chatList.unReadCount = 3;
+//        chatList.update();
+
+
 
         // Query the ChatList from local database
-        chatLists = ChatList.getAll(clientId);
-        chatListAdapter.setChatLists(chatLists);
-        chatListAdapter.notifyDataSetChanged();
+        queryChatListFromLocalDB();
 
+//        EventBus.getDefault().register(new EventBusObject<ChatListReloadEvent>() {
+//            @Override
+//            public void onEvent(ChatListReloadEvent event) {
+//                queryChatListFromLocalDB();
+//            }
+//        });
 
         // Delete
 //        chatLists.get(0).delete();
     }
 
+    private void queryChatListFromLocalDB() {
+        chatLists = ChatList.getAll(clientId);
+        chatListAdapter.setChatLists(chatLists);
+        chatListAdapter.notifyDataSetChanged();
+    }
+
     @Override
     public void onResume(){
         super.onResume();
+
+        MessageCallback messageCallback = new MessageCallback(ChatListActivity.this);
+        application.anIM.setCallback(messageCallback);
+
+        // Reload
+        queryChatListFromLocalDB();
+
+
 //        setProgressBarIndeterminateVisibility(true);
 //        Thread t = new Thread(new Runnable(){
 //            @Override
@@ -93,6 +117,12 @@ public class ChatListActivity extends AppCompatActivity {
 //        t.start();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        application.anIM.setCallback(null);
+    }
 
 //    @Override
 //    public void update(final Observable observable, final Object data) {

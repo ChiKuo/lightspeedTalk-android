@@ -6,9 +6,13 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
 
 
 /**
@@ -68,18 +72,39 @@ public class ChatList extends Model {
         Date date = new Date();
 
         ChatList exist;
-
         exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
 
         if(exist == null){
             this.updateTime = date;
-    		save();
-    	}else{
-            exist.lastMessage = lastMessage;
-            exist.unReadCount = unReadCount;
-    		exist.updateTime = date;
-    		exist.save();
-    	}
+            save();
+        }else{
+            if (lastMessage != null){
+                exist.lastMessage = lastMessage;
+            }
+            exist.unReadCount ++;
+            exist.updateTime = date;
+            exist.save();
+        }
+
+        // Reload ChatList
+//        EventBus.getDefault().post(new ChatListReloadEvent());
+    }
+
+
+    public void read(){
+        Date date = new Date();
+
+        ChatList exist;
+        exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
+
+        if(exist != null){
+            exist.unReadCount = 0;
+            exist.updateTime = date;
+            exist.save();
+        }
+
+        // Reload ChatList
+//        EventBus.getDefault().post(new ChatListReloadEvent());
     }
 
 

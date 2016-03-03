@@ -1,4 +1,4 @@
-package chikuo.tw.lightspeedtalk_android.Adapter;
+package chikuo.tw.lightspeedtalk_android.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,11 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import chikuo.tw.lightspeedtalk_android.Activity.ChatActivity;
+import chikuo.tw.lightspeedtalk_android.activity.ChatActivity;
 import chikuo.tw.lightspeedtalk_android.ChatList;
 import chikuo.tw.lightspeedtalk_android.R;
 
@@ -45,11 +43,17 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
         ChatList chatList = chatLists.get(position);
 
 //        holder.textName.setText(eachChat.get("clientId")); //Token
-        holder.textName.setText(chatList.targetClientId);
-        holder.textMsg.setText(chatList.lastMessage);
+        if (chatList.targetClientId != null){
+            holder.textName.setText(chatList.targetClientId);
+        }
+        if (chatList.lastMessage != null){
+            holder.textMsg.setText(chatList.lastMessage);
+        }
+        if (chatList.updateTime != null){
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            holder.textTime.setText(sdf.format(chatList.updateTime));
+        }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        holder.textTime.setText(sdf.format(chatList.updateTime));
 
         if (chatList.unReadCount > 0){
             holder.badge.setVisibility(View.VISIBLE);
@@ -85,6 +89,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
+
+            ChatList clickChat = chatLists.get(getAdapterPosition());
+            clickChat.read();
 
             Intent chatIntent = new Intent(ct,ChatActivity.class);
             ct.startActivity(chatIntent);

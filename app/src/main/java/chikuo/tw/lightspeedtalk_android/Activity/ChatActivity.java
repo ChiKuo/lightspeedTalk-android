@@ -1,4 +1,4 @@
-package chikuo.tw.lightspeedtalk_android.Activity;
+package chikuo.tw.lightspeedtalk_android.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,7 +36,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
-import chikuo.tw.lightspeedtalk_android.Adapter.ChatHistoryAdapter;
+import chikuo.tw.lightspeedtalk_android.adapter.ChatHistoryAdapter;
 import chikuo.tw.lightspeedtalk_android.Application;
 import chikuo.tw.lightspeedtalk_android.MyMessage;
 import chikuo.tw.lightspeedtalk_android.R;
@@ -279,6 +279,12 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 									);
 								}
 							}
+							// Send Read
+							try {
+								application.anIM.sendReadACK(historyList.get(i).getFrom(), historyList.get(i).getMsgId());
+							} catch (ArrownockException e) {
+								e.printStackTrace();
+							}
 							history.add(mMessage);
 						}
 						updateHistoryList(true);
@@ -298,8 +304,9 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 
 	public void updateHistoryList(Boolean scroll) {
 		chatHistoryAdapter.notifyDataSetChanged();
-		if(scroll)
-			chatHistoryRv.smoothScrollToPosition(chatHistoryRv.getBottom());
+		if(scroll){
+            chatHistoryRv.smoothScrollToPosition(chatHistoryRv.getBottom());
+        }
 	}
 
 	AnIMCallbackAdapter messageCallback = new AnIMCallbackAdapter() {
@@ -440,35 +447,38 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 
 		@Override
 		public void messageSent(final AnIMMessageSentCallbackData data){
-			if(data.isError()){
-				runOnUiThread(new Runnable(){
-					public void run() {
-						Toast.makeText(getBaseContext(), data.getException().getMessage(), Toast.LENGTH_LONG).show();
-					}
-				});
-			}else{
-				runOnUiThread(new Runnable() {
-					public void run() {
-						MyMessage mMessage = new MyMessage(
-								application.mClientId,
-								messageToSend.getType(),
-								messageToSend.getMsg(),
-								messageToSend.getData(),
-								messageToSend.getContent()
-						);
-						history.add(mMessage);
+            if (messageToSend != null){
+                if (data.isError()) {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getBaseContext(), data.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            MyMessage mMessage = new MyMessage(
+                                    application.mClientId,
+                                    messageToSend.getType(),
+                                    messageToSend.getMsg(),
+                                    messageToSend.getData(),
+                                    messageToSend.getContent()
+                            );
+                            history.add(mMessage);
 
-						InputMethodManager imm = (InputMethodManager) ChatActivity.this
-								.getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(messageEditText.getWindowToken(), 0);
-						messageEditText.setText("");
-						messageToSend = new MyMessage();
+                            InputMethodManager imm = (InputMethodManager) ChatActivity.this
+                                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(messageEditText.getWindowToken(), 0);
+                            messageEditText.setText("");
+                            messageToSend = new MyMessage();
 
-						updateHistoryList(true);
-					}
-				});
-			}
+                            updateHistoryList(true);
+                        }
+                    });
+                }
+            }
 		}
+
 		@Override
 		public void statusUpdate(final AnIMStatusUpdateCallbackData data){
 			final ArrownockException e = data.getException();

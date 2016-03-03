@@ -1,4 +1,4 @@
-package chikuo.tw.lightspeedtalk_android.Activity;
+package chikuo.tw.lightspeedtalk_android.activity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        MessageCallback messageCallback = new MessageCallback();
+        MessageCallback messageCallback = new MessageCallback(MainActivity.this);
         application.anIM.setCallback(messageCallback);
     }
 
