@@ -86,7 +86,6 @@ public class ChatList extends Model {
             exist.save();
         }
 
-        // TODO reload bug
         // Reload ChatList
         EventBus.getDefault().post(new ChatListReloadEvent());
     }
@@ -108,5 +107,36 @@ public class ChatList extends Model {
         EventBus.getDefault().post(new ChatListReloadEvent());
     }
 
+    public void send(){
+        Date date = new Date();
 
+        ChatList exist;
+        exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
+
+        if(exist == null){
+            this.updateTime = date;
+            save();
+        }else{
+            if (lastMessage != null){
+                exist.lastMessage = lastMessage;
+            }
+            exist.updateTime = date;
+            exist.save();
+        }
+
+        // Reload ChatList
+        EventBus.getDefault().post(new ChatListReloadEvent());
+    }
+
+
+//        // Create a ChatList
+//        ChatList chatList = new ChatList();
+//        chatList.currentClientId = clientId;
+//        chatList.targetClientId = "AIMOM1Y3KT3T8DV8YMUN5U5";
+//        chatList.lastMessage = "Hi";
+//        chatList.unReadCount = 3;
+//        chatList.update();
+//
+//        //  Delete
+//        chatLists.get(0).delete();
 }

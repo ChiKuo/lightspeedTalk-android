@@ -22,14 +22,13 @@ import chikuo.tw.lightspeedtalk_android.R;
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
 
-    List<ChatList> chatLists;
+//    String clientId = "AIMJYM8T2UCS5JFCD62UR8E";
+    private List<ChatList> chatLists;
     private Context ct;
-//    private Handler handler;
 
     public ChatListAdapter(Context ct,List<ChatList> chatLists) {
         this.ct = ct;
         this.chatLists = chatLists;
-//        handler = new Handler();
     }
 
     @Override
@@ -43,9 +42,9 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         ChatList chatList = chatLists.get(position);
 
-//        holder.textName.setText(eachChat.get("clientId")); //Token
         if (chatList.targetClientId != null){
             holder.textName.setText(chatList.targetClientId);
+            // TODO find name by targetClientId
         }
         if (chatList.lastMessage != null){
             holder.textMsg.setText(chatList.lastMessage);
@@ -55,14 +54,12 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             holder.textTime.setText(sdf.format(chatList.updateTime));
         }
 
-
         if (chatList.unReadCount > 0){
             holder.badge.setVisibility(View.VISIBLE);
             holder.badge.setText(String.valueOf(chatList.unReadCount));
         } else {
             holder.badge.setVisibility(View.GONE);
         }
-
     }
 
 
@@ -100,28 +97,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
             } catch (ArrayIndexOutOfBoundsException e){
                 e.printStackTrace();
             }
-
         }
     }
 
-
     public void setChatLists(List<ChatList> chatLists) {
         this.chatLists = chatLists;
-    }
-
-    // TODO Check use
-    private OnDataResetListener onDataResetListener;
-
-    public OnDataResetListener getOnDataResetListener() {
-        return onDataResetListener;
-    }
-
-    public void setOnDataResetListener(OnDataResetListener onDataResetListener) {
-        this.onDataResetListener = onDataResetListener;
-    }
-
-    public interface OnDataResetListener {
-        public void dataDidApply(int dataCount);
     }
 
 }

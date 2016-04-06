@@ -36,6 +36,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 
+import chikuo.tw.lightspeedtalk_android.ChatList;
 import chikuo.tw.lightspeedtalk_android.adapter.ChatHistoryAdapter;
 import chikuo.tw.lightspeedtalk_android.Application;
 import chikuo.tw.lightspeedtalk_android.MyMessage;
@@ -194,6 +195,13 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		String msg = mymessage.getMsg();
 		String data = mymessage.getData();
 		byte[] content = mymessage.getContent();
+
+		// Update local chatList
+		ChatList chatList = new ChatList();
+		chatList.currentClientId = application.mClientId;
+		chatList.targetClientId = targetId ;
+		chatList.lastMessage = msg;
+		chatList.send();
 
 		try {
 			if(type == Utils.Constant.AttachmentType.IMAGE){
