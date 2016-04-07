@@ -21,8 +21,6 @@ import chikuo.tw.lightspeedtalk_android.R;
  */
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHolder> {
 
-
-//    String clientId = "AIMJYM8T2UCS5JFCD62UR8E";
     private List<ChatList> chatLists;
     private Context ct;
 
@@ -44,7 +42,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
         if (chatList.targetClientId != null){
             holder.textName.setText(chatList.targetClientId);
-            // TODO find name by targetClientId
+            // TODO find name & image by targetClientId
         }
         if (chatList.lastMessage != null){
             holder.textMsg.setText(chatList.lastMessage);
@@ -90,10 +88,14 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ViewHo
 
             try {
                 ChatList clickChat = chatLists.get(getAdapterPosition());
-                clickChat.read();
-
-                Intent chatIntent = new Intent(ct,ChatActivity.class);
-                ct.startActivity(chatIntent);
+                if (clickChat.unReadCount > 0){
+                    clickChat.read();
+                }
+                if (clickChat.targetClientId != null){
+                    Intent chatIntent = new Intent(ct,ChatActivity.class);
+                    chatIntent.putExtra("targetClientId",clickChat.targetClientId);
+                    ct.startActivity(chatIntent);
+                }
             } catch (ArrayIndexOutOfBoundsException e){
                 e.printStackTrace();
             }

@@ -63,7 +63,7 @@ public class ChatList extends Model {
         return new Select()
                 .from(ChatList.class)
                 .where("currentClientId = ?", currentClientId)
-                .orderBy("updateTime")
+                .orderBy("updateTime" + " DESC")
                 .execute();
     }
 
@@ -92,14 +92,12 @@ public class ChatList extends Model {
 
 
     public void read(){
-        Date date = new Date();
 
         ChatList exist;
         exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
 
         if(exist != null){
             exist.unReadCount = 0;
-            exist.updateTime = date;
             exist.save();
         }
 

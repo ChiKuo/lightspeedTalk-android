@@ -53,8 +53,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 	private ChatHistoryAdapter chatHistoryAdapter;
 	private ArrayList<MyMessage> history;
 
-	// TODO send data
-	private String targetId = "AIMOM1Y3KT3T8DV8YMUN5U5";
+	private String targetId;
 	private MyMessage messageToSend;
 	private EditText messageEditText;
 
@@ -64,19 +63,25 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		setContentView(R.layout.activity_chat);
 		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-		application = (Application) getApplicationContext();
+        if (getIntent().hasExtra("targetClientId")){
+            targetId = getIntent().getStringExtra("targetClientId");
+            if (targetId != null){
 
-		initView();
-		getHistory();
+                application = (Application) getApplicationContext();
 
-//		checkBundle();
+                initView();
+                getHistory();
 
-		actionBar = getSupportActionBar();
-		if (actionBar != null) {
-			actionBar.setDisplayHomeAsUpEnabled(true);
-			actionBar.setDisplayUseLogoEnabled(false);
-			actionBar.setTitle(targetId);
-		}
+                actionBar = getSupportActionBar();
+                if (actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                    actionBar.setDisplayUseLogoEnabled(false);
+                    actionBar.setTitle(targetId);
+                    // TODO find user name from targetId
+                }
+            }
+        }
+
 	}
 
 
@@ -97,7 +102,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		chatHistoryRv = (RecyclerView) findViewById(R.id.chat_history_rv);
 		chatHistoryRv.setLayoutManager(layoutManager);
 		history = new ArrayList<MyMessage>();
-		chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, history,application.mClientId,application.mUsersMap);
+		chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, history, targetId);
 		chatHistoryRv.setAdapter(chatHistoryAdapter);
 
 		// Send message button
@@ -123,71 +128,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 	protected void onNewIntent(Intent intent) {
 	    super.onNewIntent(intent);
 	    setIntent(intent);
-//		checkBundle();
 	}
 
-//
-//	private void checkBundle(){
-//		if(getIntent().getExtras()!=null && getIntent().getExtras().containsKey(Constant.INTENT_EXTRA_KEY_CHAT)){
-//			mChat = (Chat) getIntent().getExtras().getSerializable(Constant.INTENT_EXTRA_KEY_CHAT);
-//
-//			User mUser = BentoLightSpeedUserManager.getInstance(this).getCurrentUser();
-//			final ChatUser cUser = new ChatUser(mUser.clientId,mUser.userName,mUser.userPhotoUrl);
-//			mChatView.setChat(cUser,mChat.getFromTable());
-//
-//			final Map<String,ChatUser> userMap = new HashMap<String,ChatUser>();
-//
-//			if(mChat.topic == null){
-//				// Personal
-//				final String userClientId = mChat.targetClientId;
-//
-//				if (userClientId!=null) {
-//					// Check user
-//					ParseQuery<ParseUser> parseUserParseQuery = ParseUser.getQuery();
-//					parseUserParseQuery.whereEqualTo("lightspeedUserId", mChat.targetClientId);
-//					parseUserParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
-//					parseUserParseQuery.setMaxCacheAge(6 * 60 * 1000);
-//					parseUserParseQuery.getFirstInBackground(new GetCallback<ParseUser>() {
-//						@Override
-//						public void done(ParseUser parseUser, ParseException e) {
-//							if (e == null && parseUser != null){
-//
-//								String userName = parseUser.getString("nickName");
-//								ParseFile userImage = parseUser.getParseFile("imageFile");
-//
-//								if (userName != null){
-//									// Set userName , Let it show on notification
-//									cUser.setUsername(userName);
-//									mChatView.setChat(cUser,mChat.getFromTable());
-//								}
-//
-//								if(userImage != null){
-//									userMap.put(userClientId, new ChatUser(userClientId, userName, userImage.getUrl()));
-//								}else{
-//									userMap.put(userClientId, new ChatUser(userClientId, userName, null));
-//								}
-//								mChatView.setUserMap(userMap);
-//								// Show interlocutor name on actionBar
-//								if (userMap.get(mChat.targetClientId).getUsername() != null){
-//									actionBar.setTitle(userMap.get(mChat.targetClientId).getUsername());
-//								}
-//							}
-//
-//						}
-//					});
-//
-//				}
-//			} else{
-//				// Group
-//				for(TopicMember topicMember : mChat.topic.members()){
-//					User user = BentoLightSpeedUserManager.getInstance(this).getUserByClientId(topicMember.clientId);
-//					if(user!=null)
-//						userMap.put(user.clientId,  new ChatUser(user.clientId,user.userName,user.userPhotoUrl));
-//				}
-//			}
-//			mChatView.setUserMap(userMap);
-//		}
-//	}
 
 	public void sendMsg(MyMessage mymessage) {
 
@@ -313,7 +255,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 	public void updateHistoryList(Boolean scroll) {
 		chatHistoryAdapter.notifyDataSetChanged();
 		if(scroll){
-            chatHistoryRv.smoothScrollToPosition(chatHistoryRv.getBottom());
+			// Scroll to bottom
+			chatHistoryRv.scrollToPosition(history.size() - 1);
         }
 	}
 

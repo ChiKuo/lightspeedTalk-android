@@ -43,9 +43,6 @@ public class ChatListActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager mLayoutManager;
     private RecyclerView rv;
 
-    // TODO send
-    String clientId = "AIMJYM8T2UCS5JFCD62UR8E";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,7 +101,7 @@ public class ChatListActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                chatLists = ChatList.getAll(clientId);
+                chatLists = ChatList.getAll(application.mClientId);
                 chatListAdapter.setChatLists(chatLists);
                 chatListAdapter.notifyDataSetChanged();
             }

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Map;
 
+import chikuo.tw.lightspeedtalk_android.Application;
 import chikuo.tw.lightspeedtalk_android.MyMessage;
 import chikuo.tw.lightspeedtalk_android.R;
 
@@ -20,18 +21,20 @@ import chikuo.tw.lightspeedtalk_android.R;
 public class ChatHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
     private ArrayList<MyMessage> mData;
-    private Map<String,String> mClientId2Name;
-    private String mClientId;
+    private String targetId;
     private Context ct;
+    private Application application;
 
     private static final int TYPE_ME = 0;
     private static final int TYPE_CLIENT = 1;
 
-    public ChatHistoryAdapter(Context context, ArrayList<MyMessage> history, String clientId, Map<String, String> clientId2Name) {
+    public ChatHistoryAdapter(Context context, ArrayList<MyMessage> history, String targetId) {
         ct = context;
         mData = history;
-        mClientId = clientId;
-        mClientId2Name = clientId2Name;
+        targetId = targetId;
+        application = (Application) ct.getApplicationContext();
+
+        // TODO find user by targetId
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public int getItemViewType(int position) {
 
         MyMessage msg = mData.get(position);
-        if (msg.getFrom().equals(mClientId)) {
+        if (msg.getFrom().equals(application.mClientId)) {
             return TYPE_ME;
         } else {
             return TYPE_CLIENT;

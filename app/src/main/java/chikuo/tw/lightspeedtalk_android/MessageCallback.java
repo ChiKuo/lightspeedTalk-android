@@ -10,13 +10,9 @@ import com.arrownock.im.callback.AnIMCallbackAdapter;
 import com.arrownock.im.callback.AnIMMessageCallbackData;
 import com.arrownock.im.callback.AnIMReceiveACKCallbackData;
 
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
-import de.greenrobot.event.EventBus;
 
 public class MessageCallback extends AnIMCallbackAdapter {
 
@@ -32,12 +28,16 @@ public class MessageCallback extends AnIMCallbackAdapter {
 
     // Recevied a message from other client
     @Override
-    public void receivedMessage(AnIMMessageCallbackData data) {
-        String msgId = data.getMsgId();
-        final String from = data.getFrom();
-        Set<String> parties = data.getParties();
-        final String message = data.getMessage();
-        Map<String, String> customData = data.getCustomData();
+    public void receivedMessage(AnIMMessageCallbackData callbackData) {
+        String msgId = callbackData.getMsgId();
+        final String from = callbackData.getFrom();
+        Set<String> parties = callbackData.getParties();
+        final String message = callbackData.getMessage();
+        Map<String, String> customData = callbackData.getCustomData();
+        final String type = customData==null ?
+                Utils.Constant.AttachmentType.TEXT:customData.get(Utils.Constant.MsgCustomData.TYPE);
+        final String data = customData==null ?
+                null:customData.get(Utils.Constant.MsgCustomData.DATA);
 
         Log.d(LOG_TAG, "received message: " + message);
 
@@ -66,6 +66,5 @@ public class MessageCallback extends AnIMCallbackAdapter {
         String from = data.getFrom();
         Log.d(LOG_TAG, "message: " + msgId + " recevied by: " + from);
     }
-
 
 }
