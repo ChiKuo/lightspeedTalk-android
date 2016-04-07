@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.arrownock.im.callback.IAnIMPushBindingCallback;
 import com.arrownock.push.AnPush;
 import com.arrownock.exception.ArrownockException;
 import com.arrownock.push.AnPushCallbackAdapter;
@@ -150,6 +151,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
+        // Bind the push service (AnPush) and client
+        application.anIM.bindAnPushService(anPush.getAnID(), getString(R.string.lightspeed_app_key), application.mClientId, new IAnIMPushBindingCallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(LOG_TAG,"bindAnPushService success");
+            }
+
+            @Override
+            public void onError(ArrownockException e) {
+                Log.d(LOG_TAG,"bindAnPushService failed");
+            }
+        });
+
         // TODO
         Intent i = new Intent(MainActivity.this, ChatListActivity.class);
         startActivity(i);
@@ -172,6 +186,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+//        //TODO Change the place when user exited the app
+//        try {
+//            application.anIM.disconnect();
+//        } catch (ArrownockException e) {
+//            e.printStackTrace();
+//        }
         application.anIM.setCallback(null);
     }
 
