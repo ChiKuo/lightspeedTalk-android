@@ -49,7 +49,7 @@ public class Application extends android.app.Application {
     public void init() {
         try {
             anIM = new AnIM(this);
-            anSocial = new AnSocial(this, getString(R.string.app_key));
+            anSocial = new AnSocial(this, getString(R.string.lightspeed_app_key));
             mUsersMap = new HashMap<String,String>();
             mTopicsMap = new HashMap<String,String>();
         } catch (ArrownockException e) {

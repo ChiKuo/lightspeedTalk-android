@@ -3,10 +3,15 @@
     package="chikuo.tw.lightspeedtalk_android">
 
 
-    <!-- Lightspeed推播需要的權限，包括網路、與寫入SD卡。 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
 
     <application
         android:name=".Application"
@@ -15,22 +20,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <!-- 填寫建立的Lightspeed AppKey -->
-        <!--<meta-data android:name="com.arrownock.im.APP_KEY" android:value="EHXIK9bvMcXq6XwXQcqcPtPuBodpDco7"/>-->
-        <meta-data
-            android:name="com.arrownock.APP_KEY" android:value="@string/app_key" />
-
-
-        <!-- ActiveAndroid version and database name -->
-        <meta-data
-            android:name="AA_DB_NAME"
-            android:value="LightSpeedTalk-android.db" />
-        <meta-data
-            android:name="AA_DB_VERSION"
-            android:value="1" />
-
-
 
         <activity android:name=".activity.MainActivity">
             <intent-filter>
@@ -44,6 +33,37 @@
         <activity android:name=".activity.ChatListActivity" />
         <activity android:name=".activity.ChatActivity" />
 
+
+        <meta-data
+            android:name="com.arrownock.APP_KEY"
+            android:value="@string/lightspeed_app_key" />
+        <meta-data
+            android:name="com.arrownock.push.SERVICE_TYPE"
+            android:value="ARROWNOCK" />
+
+
+        <!-- Default Lightspeed Push Receiver -->
+        <service android:name="com.arrownock.push.PushService" />
+        <receiver android:name="com.arrownock.push.PushBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="com.arrownock.push.PushService.MSG_ARRIVAL" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+            <meta-data
+                android:name="com.arrownock.push.BroadcastReceiver.ArrivalActivity"
+                android:value=".activity.ChatListActivity" />
+        </receiver>
+
+
+        <!-- ActiveAndroid version and database name -->
+        <meta-data
+            android:name="AA_DB_NAME"
+            android:value="LightSpeedTalk-android.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="1" />
 
     </application>
 

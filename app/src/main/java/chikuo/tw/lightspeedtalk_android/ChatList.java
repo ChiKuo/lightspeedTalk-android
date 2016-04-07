@@ -80,6 +80,7 @@ public class ChatList extends Model {
         }else{
             if (lastMessage != null){
                 exist.lastMessage = lastMessage;
+                exist.unReadCount = 1;
             }
             exist.unReadCount = exist.unReadCount + 1;
             exist.updateTime = date;

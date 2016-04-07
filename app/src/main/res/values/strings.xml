@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">lightspeedTalk-android</string>
-    <string name="app_key">EHXIK9bvMcXq6XwXQcqcPtPuBodpDco7</string>
+    <string name="lightspeed_app_key">EHXIK9bvMcXq6XwXQcqcPtPuBodpDco7</string>
 </resources>

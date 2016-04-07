@@ -1,18 +1,26 @@
 package chikuo.tw.lightspeedtalk_android.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.arrownock.push.AnPush;
 import com.arrownock.exception.ArrownockException;
+import com.arrownock.push.AnPushCallbackAdapter;
+import com.arrownock.push.AnPushStatus;
+import com.arrownock.push.IAnPushRegistrationCallback;
 import com.arrownock.social.AnSocialMethod;
 import com.arrownock.social.IAnSocialCallback;
 
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import chikuo.tw.lightspeedtalk_android.Application;
@@ -22,6 +30,14 @@ import chikuo.tw.lightspeedtalk_android.R;
 public class MainActivity extends AppCompatActivity {
 
     private Application application;
+    private AnPush anPush;
+
+    private final String LOG_TAG = "LightspeedPush";
+    private final String LIGHT_SPEED_PREF = "Lightspeed";
+    private final String REGISTER_TIME_STAMP = "register_time_stamp";
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+    private final long RegisterDelay = 604800000l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +45,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         application = Application.getInstance(this);
+        sharedPreferences = getSharedPreferences(LIGHT_SPEED_PREF, MODE_PRIVATE);
 
         login("chi","chi");
+
+        initLightSpeedPushServer();
     }
 
     @Override
@@ -156,5 +175,77 @@ public class MainActivity extends AppCompatActivity {
         application.anIM.setCallback(null);
     }
 
+    private void initLightSpeedPushServer() {
+
+        // The channel names we'll register at Lightspeed.
+        List<String> channels = new ArrayList<String>();
+        channels.add("android");
+        channels.add("test");
+
+        try {
+            // Instantiate Lightspeed AnPush instance which is an entry point of Lightspeed service.
+            anPush = AnPush.getInstance(getBaseContext());
+            anPush.setCallback(new AnPushCallbackAdapter() {
+
+                @Override
+                public void statusChanged(AnPushStatus currentStatus, ArrownockException exception) {
+
+                    if (currentStatus == AnPushStatus.ENABLE) {
+                        Log.i(LOG_TAG, "Push status enalbed");
+
+                    } else if (currentStatus == AnPushStatus.DISABLE) {
+                        Log.e(LOG_TAG, "Push status disabled");
+                    }
+
+                    if (exception != null) {
+                        Log.e(LOG_TAG, "Push status changed with error occuring = " + exception.toString());
+                    }
+                }
+            });
+
+            // Register channels to Lightspeed service.
+            // If register is success, the callback function onSuccess() in IAnPushRegistrationCallback would be invoked.
+            Log.i(LOG_TAG, "Register push channels");
+
+            if(needRegister()){
+                anPush.register(channels, new IAnPushRegistrationCallback() {
+                    @Override
+                    public void onSuccess(String s) {
+                        Log.e(LOG_TAG, "Register success " );
+                        editor = sharedPreferences.edit();
+                        editor.putLong(REGISTER_TIME_STAMP, Calendar.getInstance().getTimeInMillis()).commit();
+
+                        try {
+                            anPush.enable();
+                        } catch (ArrownockException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onError(ArrownockException e) {
+                        Log.e(LOG_TAG, "Register with error = " + e.getMessage());
+                    }
+                });
+            }else{
+                anPush.enable();
+            }
+
+        } catch (ArrownockException ex) {
+            // If there's any error occur during register procedure, we'll print error message on Logcat.
+            ex.printStackTrace();
+        }
+
+    }
+
+    private Boolean needRegister(){
+        Long now = Calendar.getInstance().getTimeInMillis();
+        Long last = sharedPreferences.getLong(REGISTER_TIME_STAMP, 0);
+        if(now - last >= RegisterDelay){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 }
