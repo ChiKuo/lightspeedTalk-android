@@ -67,7 +67,7 @@ public class ChatList extends Model {
                 .execute();
     }
 
-
+    // When user got a unread message
     public void update(){
         Date date = new Date();
 
@@ -77,12 +77,33 @@ public class ChatList extends Model {
         if(exist == null){
             this.updateTime = date;
             save();
-        }else{
+        } else {
             if (lastMessage != null){
                 exist.lastMessage = lastMessage;
-                exist.unReadCount = 1;
             }
+            exist.updateTime = date;
             exist.unReadCount = exist.unReadCount + 1;
+            exist.save();
+        }
+
+        // Reload ChatList
+        EventBus.getDefault().post(new ChatListReloadEvent());
+    }
+
+    // When user send message
+    public void send(){
+        Date date = new Date();
+
+        ChatList exist;
+        exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
+
+        if(exist == null){
+            this.updateTime = date;
+            save();
+        } else {
+            if (lastMessage != null){
+                exist.lastMessage = lastMessage;
+            }
             exist.updateTime = date;
             exist.save();
         }
@@ -92,6 +113,7 @@ public class ChatList extends Model {
     }
 
 
+    // When user read message
     public void read(){
 
         ChatList exist;
@@ -105,28 +127,6 @@ public class ChatList extends Model {
         // Reload ChatList
         EventBus.getDefault().post(new ChatListReloadEvent());
     }
-
-    public void send(){
-        Date date = new Date();
-
-        ChatList exist;
-        exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
-
-        if(exist == null){
-            this.updateTime = date;
-            save();
-        }else{
-            if (lastMessage != null){
-                exist.lastMessage = lastMessage;
-            }
-            exist.updateTime = date;
-            exist.save();
-        }
-
-        // Reload ChatList
-        EventBus.getDefault().post(new ChatListReloadEvent());
-    }
-
 
 //        // Create a ChatList
 //        ChatList chatList = new ChatList();

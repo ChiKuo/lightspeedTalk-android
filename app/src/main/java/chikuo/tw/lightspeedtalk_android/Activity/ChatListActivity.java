@@ -8,8 +8,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.arrownock.exception.ArrownockException;
+import com.arrownock.im.AnIMMessage;
 import com.arrownock.im.callback.AnIMGetClientsStatusCallbackData;
 import com.arrownock.im.callback.IAnIMGetClientsStatusCallback;
+import com.arrownock.im.callback.IAnIMHistoryCallback;
 import com.arrownock.social.AnSocialMethod;
 import com.arrownock.social.IAnSocialCallback;
 
@@ -38,6 +40,7 @@ public class ChatListActivity extends AppCompatActivity {
 
     private Application application;
     private List<ChatList> chatLists;
+    private List<AnIMMessage> offlineHistoryMessage;
 
     private ChatListAdapter chatListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -49,6 +52,7 @@ public class ChatListActivity extends AppCompatActivity {
 
         application = (Application) getApplicationContext();
         chatLists = new ArrayList<>();
+        offlineHistoryMessage = new ArrayList<>();
 
         setContentView(R.layout.activity_chat_list);
 
@@ -69,6 +73,9 @@ public class ChatListActivity extends AppCompatActivity {
 
         // Query the ChatList from local database
         queryChatListFromLocalDB();
+
+        // Query the message which send when user offline
+        getOfflineHistory();
     }
 
     @Override
@@ -104,6 +111,40 @@ public class ChatListActivity extends AppCompatActivity {
                 chatLists = ChatList.getAll(application.mClientId);
                 chatListAdapter.setChatLists(chatLists);
                 chatListAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void getOfflineHistory(){
+
+        int historyLimit = 10;
+        application.anIM.getOfflineHistory(application.mClientId, historyLimit, new IAnIMHistoryCallback() {
+            @Override
+            public void onSuccess(List<AnIMMessage> messages, int count) {
+                offlineHistoryMessage.addAll(messages);
+
+                if (count > 0) {
+                    // If have offline message yet
+                    getOfflineHistory();
+                } else {
+                    // Get all offline message done
+                    int offlineMessageSize = offlineHistoryMessage.size();
+                    if (offlineMessageSize > 0) {
+                        for (int i = offlineMessageSize - 1 ; i >= 0; i--) {
+                            // Update local chatList
+                            ChatList chatList = new ChatList();
+                            chatList.currentClientId = application.mClientId;
+                            chatList.targetClientId = offlineHistoryMessage.get(i).getFrom();
+                            chatList.lastMessage = offlineHistoryMessage.get(i).getMessage();
+                            chatList.update();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(ArrownockException exception) {
+                Log.d("getOfflineHistory","getOfflineHistory error = " + exception.getMessage());
             }
         });
     }

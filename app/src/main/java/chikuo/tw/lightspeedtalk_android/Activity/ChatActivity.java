@@ -195,6 +195,9 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 					public void run() {
 						history.clear();
 						for (int i = historyList.size()-1; i >=0; i--) {
+
+
+
 							MyMessage mMessage;
 							if(historyList.get(i).getType() == AnIMMessageType.AnIMBinaryMessage){
 								mMessage = new MyMessage(
@@ -236,6 +239,16 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 								e.printStackTrace();
 							}
 							history.add(mMessage);
+
+							// TODO delete
+//                            if (i == 0){
+//                                // Save the last message
+//								ChatList chatList = new ChatList();
+//								chatList.currentClientId = application.mClientId;
+//								chatList.targetClientId = targetId ;
+//								chatList.lastMessage = mMessage.getMsg();
+//                                chatList.send();
+//                            }
 						}
 						updateHistoryList(true);
 					}

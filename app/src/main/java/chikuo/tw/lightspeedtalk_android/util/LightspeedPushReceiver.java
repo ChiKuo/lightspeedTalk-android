@@ -69,7 +69,7 @@ public class LightspeedPushReceiver extends PushBroadcastReceiver {
         }
 
         if (title == null){
-            // TODO Use from to find sender's name
+            // TODO Use from value to find sender's name
             // Send from offline message
             sendNotification(context, "你有一則新訊息", from + " : " +alert);
         } else {
@@ -101,7 +101,8 @@ public class LightspeedPushReceiver extends PushBroadcastReceiver {
         builder.setContentIntent(resultPendingIntent);
 
         // Issue the Notification
-        int notificationId = (int) System.currentTimeMillis();
+//        int notificationId = (int) System.currentTimeMillis();
+        int notificationId = 0;
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(notificationId, builder.build());
     }
