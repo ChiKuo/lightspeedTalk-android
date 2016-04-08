@@ -46,7 +46,7 @@ public class MessageCallback extends AnIMCallbackAdapter {
         chatList.currentClientId = application.mClientId;
         chatList.targetClientId = from ;
         chatList.lastMessage = message;
-        chatList.update();
+        chatList.update(true);
 
         if (customData != null) {
             Set<String> keys = customData.keySet();

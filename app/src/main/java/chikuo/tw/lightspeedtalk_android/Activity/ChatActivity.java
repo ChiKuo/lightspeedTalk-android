@@ -143,7 +143,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		chatList.currentClientId = application.mClientId;
 		chatList.targetClientId = targetId ;
 		chatList.lastMessage = msg;
-		chatList.send();
+		chatList.update(false);
 
 		try {
 			if(type == Utils.Constant.AttachmentType.IMAGE){
@@ -153,7 +153,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 					application.anIM.sendBinaryToTopic(targetId, content,Utils.Constant.AttachmentType.IMAGE);
 				}
 			}else if(type.equals(Utils.Constant.AttachmentType.TEXT)){
-				Log.i("send Msg to " + targetId, "message: " + msg);
+				Log.i("update Msg to " + targetId, "message: " + msg);
 				if (roomType == Utils.Constant.RoomType.CLIENT) {
 					application.anIM.sendMessage(targetId, msg);
 				} else if (roomType == Utils.Constant.RoomType.TOPIC) {
@@ -247,7 +247,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 //								chatList.currentClientId = application.mClientId;
 //								chatList.targetClientId = targetId ;
 //								chatList.lastMessage = mMessage.getMsg();
-//                                chatList.send();
+//                                chatList.updateWithRead();
 //                            }
 						}
 						updateHistoryList(true);
@@ -259,9 +259,9 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 			Set<String> targetIds;
 			targetIds = new HashSet();
 			targetIds.add(targetId);
-			application.anIM.getHistory(targetIds, application.mClientId, 30, 0, historyCallback);
+			application.anIM.getHistory(targetIds, application.mClientId, 5, 0, historyCallback);
 		} else if (roomType == Utils.Constant.RoomType.TOPIC) {
-			application.anIM.getTopicHistory(targetId, application.mClientId, 30, 0, historyCallback);
+			application.anIM.getTopicHistory(targetId, application.mClientId, 5, 0, historyCallback);
 		}
 	}
 
@@ -324,7 +324,16 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 			final String data = customData==null ?
 					null:customData.get(Utils.Constant.MsgCustomData.DATA);
 
+			// Update chatList
+			ChatList chatList = new ChatList();
+			chatList.currentClientId = application.mClientId;
+			chatList.targetClientId = from ;
+			chatList.lastMessage = message;
+
+			// The message is from current target user
 			if (roomType == Utils.Constant.RoomType.CLIENT && from.equals(targetId)) {
+				chatList.update(false);
+
 				runOnUiThread(new Runnable() {
 					public void run() {
 						MyMessage mMessage = new MyMessage(
@@ -338,23 +347,18 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 						updateHistoryList(true);
 					}
 				});
-			} else {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						if (type.equals(Utils.Constant.AttachmentType.TEXT)){
-							Toast.makeText(getBaseContext(),application.mUsersMap.get(from)+" : " + message, Toast.LENGTH_LONG).show();
-						}else{
-							Toast.makeText(getBaseContext(),application.mUsersMap.get(from)+" : [" + customData.get("type") + "]", Toast.LENGTH_LONG).show();
-						}
-					}
-				});
-			}
 
-			// Already read
-			try {
-				application.anIM.sendReadACK(from, msgId);
-			} catch (ArrownockException e) {
-				e.printStackTrace();
+				// Set already read to lightspeed server
+				try {
+					application.anIM.sendReadACK(from, msgId);
+				} catch (ArrownockException e) {
+					e.printStackTrace();
+				}
+
+			} else {
+				chatList.update(true);
+				// The message is not from current target user
+				// TODO can send local notification to user
 			}
 
 		}
@@ -434,7 +438,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
                                     .getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(messageEditText.getWindowToken(), 0);
                             messageEditText.setText("");
-                            messageToSend = new MyMessage();
+                            messageToSend = null;
 
                             updateHistoryList(true);
                         }

@@ -67,8 +67,8 @@ public class ChatList extends Model {
                 .execute();
     }
 
-    // When user got a unread message
-    public void update(){
+    // When user need to update ChatList
+    public void update(boolean read){
         Date date = new Date();
 
         ChatList exist;
@@ -81,28 +81,8 @@ public class ChatList extends Model {
             if (lastMessage != null){
                 exist.lastMessage = lastMessage;
             }
-            exist.updateTime = date;
-            exist.unReadCount = exist.unReadCount + 1;
-            exist.save();
-        }
-
-        // Reload ChatList
-        EventBus.getDefault().post(new ChatListReloadEvent());
-    }
-
-    // When user send message
-    public void send(){
-        Date date = new Date();
-
-        ChatList exist;
-        exist = new Select().from(ChatList.class).where("targetClientId = \""+targetClientId+"\" and currentClientId = \""+currentClientId+"\"").executeSingle();
-
-        if(exist == null){
-            this.updateTime = date;
-            save();
-        } else {
-            if (lastMessage != null){
-                exist.lastMessage = lastMessage;
+            if (read){
+                exist.unReadCount = exist.unReadCount + 1;
             }
             exist.updateTime = date;
             exist.save();
@@ -111,7 +91,6 @@ public class ChatList extends Model {
         // Reload ChatList
         EventBus.getDefault().post(new ChatListReloadEvent());
     }
-
 
     // When user read message
     public void read(){

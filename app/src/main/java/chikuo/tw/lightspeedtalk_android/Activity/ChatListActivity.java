@@ -74,7 +74,7 @@ public class ChatListActivity extends AppCompatActivity {
         // Query the ChatList from local database
         queryChatListFromLocalDB();
 
-        // Query the message which send when user offline
+        // Query the message which updateWithRead when user offline
         getOfflineHistory();
     }
 
@@ -136,7 +136,7 @@ public class ChatListActivity extends AppCompatActivity {
                             chatList.currentClientId = application.mClientId;
                             chatList.targetClientId = offlineHistoryMessage.get(i).getFrom();
                             chatList.lastMessage = offlineHistoryMessage.get(i).getMessage();
-                            chatList.update();
+                            chatList.update(true);
                         }
                     }
                 }

@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.arrownock.im.callback.IAnIMPushBindingCallback;
@@ -48,9 +50,29 @@ public class MainActivity extends AppCompatActivity {
         application = Application.getInstance(this);
         sharedPreferences = getSharedPreferences(LIGHT_SPEED_PREF, MODE_PRIVATE);
 
-        login("chi","chi");
-
         initLightSpeedPushServer();
+
+        Button loginButton = (Button) findViewById(R.id.login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login("chi", "chi");
+            }
+        });
+
+        Button logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO When user exited the app call the function
+                try {
+                    application.anIM.disconnect();
+                } catch (ArrownockException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -186,12 +208,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-//        //TODO Change the place when user exited the app
-//        try {
-//            application.anIM.disconnect();
-//        } catch (ArrownockException e) {
-//            e.printStackTrace();
-//        }
+
         application.anIM.setCallback(null);
     }
 
