@@ -29,6 +29,8 @@ import java.util.Map;
 import chikuo.tw.lightspeedtalk_android.Application;
 import chikuo.tw.lightspeedtalk_android.MessageCallback;
 import chikuo.tw.lightspeedtalk_android.R;
+import chikuo.tw.lightspeedtalk_android.util.ChatListReloadEvent;
+import de.greenrobot.event.EventBus;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 login("chi", "chi");
+//                login("chichi", "chichi");
             }
         });
 

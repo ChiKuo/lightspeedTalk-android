@@ -69,11 +69,17 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             ClientViewHolder holder = (ClientViewHolder)viewHolder;
 //            holder.image.setImageDrawable();
             holder.messageTextView.setText(msg.getMsg());
+            if (msg.getDate() != null) {
+                holder.timeTextView.setText(msg.getDate());
+            }
 
         } else if (viewHolder instanceof MeViewHolder) {
 
             MeViewHolder holder = (MeViewHolder)viewHolder;
             holder.messageTextView.setText(msg.getMsg());
+            if (msg.getDate() != null) {
+                holder.timeTextView.setText(msg.getDate());
+            }
         }
 
     }
@@ -98,11 +104,13 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         private ImageView image;
         private TextView messageTextView;
+        private TextView timeTextView;
 
         public ClientViewHolder(View itemView) {
             super(itemView);
 
             messageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
+            timeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
             image = (ImageView) itemView.findViewById(R.id.imageView);
         }
 
@@ -112,11 +120,13 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public class MeViewHolder extends RecyclerView.ViewHolder {
 
         private TextView messageTextView;
+        private TextView timeTextView;
 
         public MeViewHolder(View itemView) {
             super(itemView);
 
             messageTextView = (TextView) itemView.findViewById(R.id.message_text_view);
+            timeTextView = (TextView) itemView.findViewById(R.id.time_text_view);
         }
     }
 

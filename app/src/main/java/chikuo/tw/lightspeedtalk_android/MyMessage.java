@@ -5,6 +5,7 @@ public class MyMessage {
 	private String Type ="";
 	private String Msg ="";
 	private String Data ="";
+	private String Date ="";
 	private byte[] Content;
 	
 	/**
@@ -15,10 +16,11 @@ public class MyMessage {
 	 * @param data Hyperlink or latlng
 	 * @param content Image binary data
 	 */
-	public MyMessage(String from, String type, String msg, String data, byte[] content){
+	public MyMessage(String from, String type, String msg, String data, String date, byte[] content){
 		this.From = from;
 		this.Msg = msg;
 		this.Data = data;
+		this.Date = date;
 		this.Content = content;
 		if(type == null){
 			this.Type = Utils.Constant.AttachmentType.NULL;
@@ -51,6 +53,9 @@ public class MyMessage {
 	public String getData(){
 		return Data == null ? " ":Data;
 	}
+	public String getDate(){
+		return Date == null ? " ":Date;
+	}
 	public byte[] getContent(){
 		return Content == null ? new byte[0]:Content;
 	}
@@ -66,6 +71,9 @@ public class MyMessage {
 	}
 	public void setData(String data){
 		Data = data;
+	}
+	public void setDate(String date){
+		Data = date;
 	}
 	public void setContent(byte[] content){
 		Content = content;

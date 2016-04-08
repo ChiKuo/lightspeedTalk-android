@@ -18,6 +18,7 @@ public class Utils {
 		public class MsgCustomData{
 			public static final String DATA = "data";
 			public static final String TYPE = "type";
+			public static final String DATE = "date";
 		}
 		public class Fragment{
 			public static final int ALL_USERS = 0;

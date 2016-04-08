@@ -27,7 +27,9 @@ import com.arrownock.im.callback.AnIMTopicBinaryCallbackData;
 import com.arrownock.im.callback.AnIMTopicMessageCallbackData;
 import com.arrownock.im.callback.IAnIMHistoryCallback;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +58,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 	private String targetId;
 	private MyMessage messageToSend;
 	private EditText messageEditText;
+
+	SimpleDateFormat sdFormat = new SimpleDateFormat("a h:mm");
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +121,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 						Utils.Constant.AttachmentType.TEXT,
 						messageEditText.getText().toString().trim(),
 						null,
+						sdFormat.format(new Date()),
 						null
 				);
 				sendMsg(messageToSend);
@@ -136,7 +141,13 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		String type = mymessage.getType();
 		String msg = mymessage.getMsg();
 		String data = mymessage.getData();
+		String date = mymessage.getDate();
 		byte[] content = mymessage.getContent();
+		// Can add customData
+		Map<String, String> customData = new HashMap<String, String>();
+		customData.put(Utils.Constant.MsgCustomData.DATA, data);
+		customData.put(Utils.Constant.MsgCustomData.TYPE, type);
+		customData.put(Utils.Constant.MsgCustomData.DATE, date);
 
 		// Update local chatList
 		ChatList chatList = new ChatList();
@@ -155,18 +166,15 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 			}else if(type.equals(Utils.Constant.AttachmentType.TEXT)){
 				Log.i("update Msg to " + targetId, "message: " + msg);
 				if (roomType == Utils.Constant.RoomType.CLIENT) {
-					application.anIM.sendMessage(targetId, msg);
+					application.anIM.sendMessage(targetId, msg, customData);
 				} else if (roomType == Utils.Constant.RoomType.TOPIC) {
 					application.anIM.sendMessageToTopic(targetId, msg);
 				}
 			}else{
-				HashMap map = new HashMap();
-				map.put(Utils.Constant.MsgCustomData.DATA, data);
-				map.put(Utils.Constant.MsgCustomData.TYPE, type);
 				if (roomType == Utils.Constant.RoomType.CLIENT) {
-					application.anIM.sendMessage(targetId, msg, map);
+					application.anIM.sendMessage(targetId, msg, customData);
 				} else if (roomType == Utils.Constant.RoomType.TOPIC) {
-					application.anIM.sendMessageToTopic(targetId, msg, map);
+					application.anIM.sendMessageToTopic(targetId, msg, customData);
 				}
 			}
 		} catch (ArrownockException e) {
@@ -196,17 +204,35 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 						history.clear();
 						for (int i = historyList.size()-1; i >=0; i--) {
 
-
-
 							MyMessage mMessage;
 							if(historyList.get(i).getType() == AnIMMessageType.AnIMBinaryMessage){
-								mMessage = new MyMessage(
-										historyList.get(i).getFrom(),
-										historyList.get(i).getFileType(),
-										null,
-										null,
-										historyList.get(i).getContent()
-								);
+								Map customData = historyList.get(i).getCustomData();
+								if(customData != null){
+									String customData_data = customData.containsKey(Utils.Constant.MsgCustomData.DATA) ?
+											(String) customData.get(Utils.Constant.MsgCustomData.DATA) : null;
+									String customData_type = customData.containsKey(Utils.Constant.MsgCustomData.TYPE) ?
+											(String) customData.get(Utils.Constant.MsgCustomData.TYPE) : null;
+									String customData_date = customData.containsKey(Utils.Constant.MsgCustomData.DATE) ?
+											(String) customData.get(Utils.Constant.MsgCustomData.DATE) : null;
+
+									mMessage = new MyMessage(
+											historyList.get(i).getFrom(),
+											historyList.get(i).getFileType(),
+											null,
+											null,
+											historyList.get(i).getCustomData().get("Date"),
+											historyList.get(i).getContent()
+									);
+								} else {
+									mMessage = new MyMessage(
+											historyList.get(i).getFrom(),
+											historyList.get(i).getFileType(),
+											null,
+											null,
+											null,
+											historyList.get(i).getContent()
+									);
+								}
 							}else{
 								Map customData = historyList.get(i).getCustomData();
 								if(customData != null){
@@ -214,12 +240,15 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 											(String) customData.get(Utils.Constant.MsgCustomData.DATA) : null;
 									String customData_type = customData.containsKey(Utils.Constant.MsgCustomData.TYPE) ?
 											(String) customData.get(Utils.Constant.MsgCustomData.TYPE) : null;
+									String customData_date = customData.containsKey(Utils.Constant.MsgCustomData.DATE) ?
+											(String) customData.get(Utils.Constant.MsgCustomData.DATE) : null;
 
 									mMessage = new MyMessage(
 											historyList.get(i).getFrom(),
 											customData_type,
 											historyList.get(i).getMessage(),
 											customData_data,
+											customData_date,
 											historyList.get(i).getContent()
 									);
 								}else{
@@ -227,6 +256,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 											historyList.get(i).getFrom(),
 											Utils.Constant.AttachmentType.TEXT,
 											historyList.get(i).getMessage(),
+											null,
 											null,
 											null
 									);
@@ -240,15 +270,6 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 							}
 							history.add(mMessage);
 
-							// TODO delete
-//                            if (i == 0){
-//                                // Save the last message
-//								ChatList chatList = new ChatList();
-//								chatList.currentClientId = application.mClientId;
-//								chatList.targetClientId = targetId ;
-//								chatList.lastMessage = mMessage.getMsg();
-//                                chatList.updateWithRead();
-//                            }
 						}
 						updateHistoryList(true);
 					}
@@ -259,9 +280,9 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 			Set<String> targetIds;
 			targetIds = new HashSet();
 			targetIds.add(targetId);
-			application.anIM.getHistory(targetIds, application.mClientId, 5, 0, historyCallback);
+			application.anIM.getHistory(targetIds, application.mClientId, 30, 0, historyCallback);
 		} else if (roomType == Utils.Constant.RoomType.TOPIC) {
-			application.anIM.getTopicHistory(targetId, application.mClientId, 5, 0, historyCallback);
+			application.anIM.getTopicHistory(targetId, application.mClientId, 30, 0, historyCallback);
 		}
 	}
 
@@ -284,6 +305,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 					Utils.Constant.AttachmentType.TEXT:customData.get(Utils.Constant.MsgCustomData.TYPE);
 			final String data = customData == null ?
 					null:customData.get(Utils.Constant.MsgCustomData.DATA);
+			final String date = customData == null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATE);
 
 			if (roomType == Utils.Constant.RoomType.TOPIC && targetId.equals(fromTopic)) {
 				runOnUiThread(new Runnable() {
@@ -293,6 +316,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 								type,
 								message,
 								data,
+								date,
 								null
 						);
 						history.add(mMessage);
@@ -323,6 +347,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 					Utils.Constant.AttachmentType.TEXT:customData.get(Utils.Constant.MsgCustomData.TYPE);
 			final String data = customData==null ?
 					null:customData.get(Utils.Constant.MsgCustomData.DATA);
+			final String date = customData==null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATE);
 
 			// Update chatList
 			ChatList chatList = new ChatList();
@@ -341,6 +367,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 								type,
 								message,
 								data,
+								date,
 								null
 						);
 						history.add(mMessage);
@@ -365,6 +392,10 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 
 		@Override
 		public void receivedBinary(final AnIMBinaryCallbackData callbackData){
+			final Map<String, String> customData = callbackData.getCustomData();
+			final String date = customData==null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATE);
+
 			if (roomType == Utils.Constant.RoomType.CLIENT && callbackData.getFrom().equals(targetId)) {
 				runOnUiThread(new Runnable() {
 					public void run() {
@@ -373,6 +404,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 								callbackData.getFileType(),
 								null,
 								null,
+								date,
 								callbackData.getContent()
 						);
 						history.add(mMessage);
@@ -390,6 +422,10 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 
 		@Override
 		public void receivedTopicBinary(final AnIMTopicBinaryCallbackData callbackData){
+			final Map<String, String> customData = callbackData.getCustomData();
+			final String date = customData==null ?
+					null:customData.get(Utils.Constant.MsgCustomData.DATE);
+
 			if (roomType == Utils.Constant.RoomType.TOPIC && callbackData.getTopic().equals(targetId)) {
 				runOnUiThread(new Runnable() {
 					public void run() {
@@ -398,6 +434,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 								callbackData.getFileType(),
 								null,
 								null,
+								date,
 								callbackData.getContent()
 						);
 						history.add(mMessage);
@@ -419,7 +456,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
                 if (data.isError()) {
                     runOnUiThread(new Runnable() {
                         public void run() {
-                            Toast.makeText(getBaseContext(), data.getException().getMessage(), Toast.LENGTH_LONG).show();
+							Toast.makeText(getBaseContext(), "伺服器斷線，將無法傳送訊息，請檢查是否已從其他裝置登入。", Toast.LENGTH_LONG).show();
                         }
                     });
                 } else {
@@ -429,7 +466,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
                                     application.mClientId,
                                     messageToSend.getType(),
                                     messageToSend.getMsg(),
-                                    messageToSend.getData(),
+									messageToSend.getData(),
+									messageToSend.getDate(),
                                     messageToSend.getContent()
                             );
                             history.add(mMessage);
@@ -459,7 +497,7 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 			}else{
 				runOnUiThread(new Runnable(){
 					public void run() {
-						Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+						Toast.makeText(getBaseContext(), "伺服器斷線，請檢查是否已從其他裝置登入。", Toast.LENGTH_LONG).show();
 					}
 				});
 				if (data.getException().getErrorCode() == ArrownockException.IM_FORCE_CLOSED

@@ -4,15 +4,21 @@ package chikuo.tw.lightspeedtalk_android;
  * Created by chikuo on 2016/2/24.
  */
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.arrownock.exception.ArrownockException;
 import com.arrownock.im.callback.AnIMCallbackAdapter;
 import com.arrownock.im.callback.AnIMMessageCallbackData;
 import com.arrownock.im.callback.AnIMReceiveACKCallbackData;
+import com.arrownock.im.callback.AnIMStatusUpdateCallbackData;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
+import chikuo.tw.lightspeedtalk_android.activity.MainActivity;
 
 public class MessageCallback extends AnIMCallbackAdapter {
 
@@ -48,23 +54,7 @@ public class MessageCallback extends AnIMCallbackAdapter {
         chatList.lastMessage = message;
         chatList.update(true);
 
-        if (customData != null) {
-            Set<String> keys = customData.keySet();
-            Iterator<String> it = keys.iterator();
-            while (it.hasNext()) {
-                String key = it.next();
-                String status = customData.get(key);
-                Log.d(LOG_TAG, key + " : " + status);
-            }
-        }
-    }
-
-    // Received the acknowledgement for msgId from IM server
-    @Override
-    public void receivedReceiveACK(AnIMReceiveACKCallbackData data) {
-        String msgId = data.getMsgId();
-        String from = data.getFrom();
-        Log.d(LOG_TAG, "message: " + msgId + " recevied by: " + from);
+        // TODO can send local notification to user
     }
 
 }
