@@ -2,6 +2,7 @@ package chikuo.tw.lightspeedtalk_android.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -86,8 +87,8 @@ public class ChatActivity extends AppCompatActivity implements Observer{
             }
         }
 
-	}
 
+	}
 
 	@Override
 	protected void onPause() {
@@ -109,13 +110,26 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 		chatHistoryAdapter = new ChatHistoryAdapter(ChatActivity.this, history, targetId);
 		chatHistoryRv.setAdapter(chatHistoryAdapter);
 
+		// TODO scrollToPosition
+		messageEditText = (EditText) findViewById(R.id.message_input_edit_text);
+//		messageEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//			@Override
+//			public void onFocusChange(View v, boolean hasFocus) {
+//				chatHistoryRv.postDelayed(new Runnable() {
+//					@Override
+//					public void run() {
+//						chatHistoryRv.scrollToPosition(history.size() - 1);
+//					}
+//				}, 100);
+//			}
+//		});
+
 		// Send message button
 		Button sendButton = (Button) findViewById(R.id.send_button);
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 
-				messageEditText = (EditText) findViewById(R.id.message_input_edit_text);
 				messageToSend = new MyMessage(
 						application.mClientId,
 						Utils.Constant.AttachmentType.TEXT,
@@ -507,11 +521,11 @@ public class ChatActivity extends AppCompatActivity implements Observer{
 					} catch (ArrownockException e1) {
 						e1.printStackTrace();
 					}
-					Intent it = new Intent();
-					it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					it.setClass(getBaseContext(), MainActivity.class);
-					startActivity(it);
-					finish();
+//					Intent it = new Intent();
+//					it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//					it.setClass(getBaseContext(), MainActivity.class);
+//					startActivity(it);
+//					finish();
 				}
 			}
 		}
